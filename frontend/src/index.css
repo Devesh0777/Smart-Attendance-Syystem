@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #F5F0E8;
+  font-family: 'Arial', sans-serif;
+  color: #000;
+}
+
+/* Neo-brutalist styles */
+.neo-card {
+  @apply bg-white border-2 border-black shadow-neo rounded-none p-6;
+}
+
+.neo-button {
+  @apply bg-white border-2 border-black shadow-neo rounded-none px-6 py-3 font-bold uppercase text-sm cursor-pointer hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all;
+}
+
+.neo-button.primary {
+  @apply bg-[#FF4B4B] text-white;
+}
+
+.neo-button.secondary {
+  @apply bg-[#FFD43B] text-black;
+}
+
+.neo-button:hover {
+  @apply shadow-none translate-x-1 translate-y-1;
+}
+
+.stat-card {
+  @apply neo-card text-center;
+}
+
+.stat-number {
+  @apply text-5xl font-bold my-4;
+}
+
+.stat-label {
+  @apply text-sm uppercase font-bold tracking-wider;
+}
+
+.sidebar {
+  @apply w-64 bg-white border-2 border-black min-h-screen flex flex-col p-6;
+}
+
+.sidebar-item {
+  @apply py-3 px-4 border-b border-black text-sm font-bold uppercase cursor-pointer hover:bg-gray-100;
+}
+
+.sidebar-item.active {
+  @apply bg-[#FF4B4B] text-white;
+}
+
+.input-field {
+  @apply border-2 border-black rounded-none px-4 py-3 font-semibold text-base focus:outline-none focus:shadow-neo;
+}
+
+.toast {
+  @apply fixed bottom-6 right-6 px-6 py-3 rounded-none border-2 border-black shadow-neo z-50;
+}
+
+.toast.success {
+  @apply bg-green-400 text-black;
+}
+
+.toast.error {
+  @apply bg-red-400 text-white;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40;
+}
+
+.modal-content {
+  @apply neo-card max-w-md w-full;
+}
