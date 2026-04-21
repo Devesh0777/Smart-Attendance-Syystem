@@ -28,6 +28,23 @@ A full-stack web application for managing student attendance using QR codes and 
 - 📅 Attendance History - detailed view of all attendance records
 - ✓ Success/Error Messages - instant feedback on attendance marking
 
+## Screenshots
+
+### Landing Page
+![Landing Page](screenshots/landing-page.png)
+
+### Teacher Login & Dashboard
+![Teacher Dashboard](screenshots/teacher-dashboard.png)
+
+### Teacher - My Courses
+![Teacher My Courses](screenshots/teacher-my-courses.png)
+
+### Teacher - Attendance Records
+![Teacher Attendance Records](screenshots/teacher-attendance-records.png)
+
+### Teacher - At-Risk Students
+![Teacher At-Risk Students](screenshots/teacher-at-risk-students.png)
+
 ## Database Schema
 
 ```sql
