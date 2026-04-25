@@ -26,20 +26,30 @@ app.post('/api/auth/teacher/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
     }
+    
+    console.log('Teacher login attempt:', email);
     const result = await query('SELECT id, name, password_hash FROM teachers WHERE email = $1', [email]);
+    
     if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log('Teacher not found:', email);
+      return res.status(404).json({ error: 'No account found with this email' });
     }
+    
     const teacher = result.rows[0];
+    console.log('Teacher found, comparing password');
     const passwordMatch = await bcryptjs.compare(password, teacher.password_hash);
+    
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log('Password mismatch for teacher:', email);
+      return res.status(401).json({ error: 'Incorrect password' });
     }
+    
+    console.log('Teacher login successful:', email);
     const token = generateToken(teacher.id, 'teacher', teacher.name);
     res.json({ token, userId: teacher.id, role: 'teacher', name: teacher.name });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Teacher login error:', error);
+    res.status(500).json({ error: 'Server error, please try again' });
   }
 });
 
@@ -49,20 +59,30 @@ app.post('/api/auth/student/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
     }
+    
+    console.log('Student login attempt:', email);
     const result = await query('SELECT id, name, password_hash FROM students WHERE email = $1', [email]);
+    
     if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log('Student not found:', email);
+      return res.status(404).json({ error: 'No account found with this email' });
     }
+    
     const student = result.rows[0];
+    console.log('Student found, comparing password');
     const passwordMatch = await bcryptjs.compare(password, student.password_hash);
+    
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log('Password mismatch for student:', email);
+      return res.status(401).json({ error: 'Incorrect password' });
     }
+    
+    console.log('Student login successful:', email);
     const token = generateToken(student.id, 'student', student.name);
     res.json({ token, userId: student.id, role: 'student', name: student.name });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Student login error:', error);
+    res.status(500).json({ error: 'Server error, please try again' });
   }
 });
 
@@ -126,10 +146,11 @@ app.post('/api/auth/student/signup', async (req, res) => {
 
 app.get('/api/departments', async (req, res) => {
   try {
-    const result = await query('SELECT id, name FROM departments ORDER BY name');
+    const result = await query('SELECT DISTINCT id, name FROM departments ORDER BY name');
+    console.log('Departments fetched:', result.rows);
     res.json(result.rows);
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error fetching departments:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

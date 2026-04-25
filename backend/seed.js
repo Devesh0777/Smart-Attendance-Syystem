@@ -75,30 +75,53 @@ async function seedDatabase() {
     const students = studentsDb.rows;
     console.log('✅ Students created');
 
-    // Create Courses
+    // Create Courses (4 courses)
+    // First delete any existing data with foreign key constraints
+    await query(`DELETE FROM attendance`);
+    await query(`DELETE FROM qr_sessions`);
+    await query(
+      `DELETE FROM courses WHERE name IN (
+        'Data Structures', 'Algorithms', 'Digital Electronics',
+        'Database Management', 'Web Development', 'Software Engineering',
+        'Data Analytics', 'Machine Learning', 'Network Security',
+        'Circuit Design', 'Computer Architecture', 'Computer Graphics',
+        'Environmental Studies'
+      )`
+    );
+    
     await query(
       `INSERT INTO courses (name, teacher_id, department_id, classroom_latitude, classroom_longitude, allowed_radius_meters)
        VALUES 
        ($1, $2, $3, $4, $5, $6),
        ($7, $8, $9, $10, $11, $12),
-       ($13, $14, $15, $16, $17, $18)
+       ($13, $14, $15, $16, $17, $18),
+       ($19, $20, $21, $22, $23, $24)
        ON CONFLICT DO NOTHING`,
       [
         'Data Structures', teacherIds[0], deptIds[0], 28.6139, 77.2090, 50,
-        'Algorithms', teacherIds[0], deptIds[0], 28.6139, 77.2090, 50,
-        'Digital Electronics', teacherIds[1], deptIds[1], 28.6139, 77.2100, 50,
+        'Computer Architecture', teacherIds[0], deptIds[0], 28.6145, 77.2095, 50,
+        'Computer Graphics', teacherIds[0], deptIds[0], 28.6150, 77.2100, 50,
+        'Environmental Studies', teacherIds[1], deptIds[1], 28.6139, 77.2100, 50,
       ]
     );
-    const coursesDb = await query("SELECT id, name, department_id FROM courses ORDER BY id LIMIT 3");
+    const coursesDb = await query("SELECT id, name, department_id, teacher_id FROM courses ORDER BY id LIMIT 4");
     const courses = coursesDb.rows;
-    console.log('✅ Courses created');
+    console.log('✅ Courses created: ' + courses.map(c => c.name).join(', '));
+
+    // Generate 30 days of attendance data for ALL courses
+    console.log('📊 Generating 30 days of attendance data...');
 
     // Generate 30 days of attendance data for ALL courses
     console.log('📊 Generating 30 days of attendance data...');
     
     for (const course of courses) {
       // Get students in this course's department
-      const courseStudents = students.filter(s => s.department_id === course.department_id);
+      let courseStudents = students.filter(s => s.department_id === course.department_id);
+      
+      // If no students in department, assign all students
+      if (courseStudents.length === 0) {
+        courseStudents = students;
+      }
       
       for (let day = 1; day <= 30; day++) {
         // Create a QR session for this day

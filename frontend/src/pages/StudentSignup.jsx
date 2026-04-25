@@ -19,7 +19,13 @@ export default function StudentSignup() {
   const { login } = useAuthStore();
 
   useEffect(() => {
-    api.get('/departments').then(res => setDepartments(res.data)).catch(() => {});
+    api.get('/departments').then(res => {
+      // Deduplicate departments by id
+      const unique = [...new Map(res.data.map(d => [d.id, d])).values()];
+      setDepartments(unique);
+    }).catch(err => {
+      console.error('Failed to load departments:', err);
+    });
   }, []);
 
   const validate = () => {

@@ -28,12 +28,34 @@ export default function Login() {
     setLoading(true);
     try {
       const endpoint = role === 'teacher' ? '/auth/teacher/login' : '/auth/student/login';
-      const response = await api.post(endpoint, { email, password });
+      console.log('Login attempt:', { email, role, endpoint });
+      const response = await api.post(endpoint, { 
+        email, 
+        password 
+      });
+      console.log('Login successful:', response.data);
       login(response.data.token, response.data.userId, response.data.role, response.data.name);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('role', response.data.role);
       showToast('Login successful!', 'success');
       setTimeout(() => navigate(role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard'), 800);
     } catch (error) {
-      showToast(error.response?.data?.error || 'Login failed', 'error');
+      console.error('Login error:', error.response?.status, error.response?.data);
+      let errorMessage = 'Login failed';
+      
+      if (error.response?.status === 404) {
+        errorMessage = 'No account found with this email';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Incorrect password';
+      } else if (error.response?.status === 400) {
+        errorMessage = error.response?.data?.error || 'Invalid input';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Server error, please try again';
+      } else {
+        errorMessage = error.response?.data?.error || 'Login failed';
+      }
+      
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
